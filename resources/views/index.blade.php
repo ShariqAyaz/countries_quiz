@@ -6,7 +6,7 @@
             @csrf
             <div class="mb-3">
                 <p><strong>What is the capital of {{ $single_quiz['country'] }}?</strong></p>
-                
+                <input type="hidden" name="country" value="{{ $single_quiz['country'] }}">
                 @foreach($single_quiz['capitals'] as $index => $capital)
                     <div class="form-check mb-3">
                         <input class="form-check-input" type="radio" name="capital" id="capital{{ $index }}" value="{{ $capital }}" required>
