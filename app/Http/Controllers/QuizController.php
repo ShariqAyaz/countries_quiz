@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Http;
 use Log;
 use Cache;
+use App\Http\Requests\AnswerValidationRequest;
 
 class QuizController extends Controller
 {
@@ -18,11 +19,12 @@ class QuizController extends Controller
         return view('index',compact('single_quiz'));
     }
 
-    public function postAnswer(Request $request){
+    public function postAnswer(AnswerValidationRequest $request){
 
         Log::info(gettype($request));
         Log::info($request->all());
 
+ 
         if (!session()->has('current_capital')) {
             return view('result', 'Session Expired');
         }
