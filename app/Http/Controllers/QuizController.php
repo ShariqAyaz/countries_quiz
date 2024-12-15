@@ -99,7 +99,6 @@ class QuizController extends Controller
         return $raw_response;
     }
 
-
     public function questionViaApi()
     {
         try {
