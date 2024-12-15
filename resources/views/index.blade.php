@@ -1,9 +1,14 @@
 @include('layout.header')
 <body>
 <div class="container">
-    @foreach($single_quiz as $i)
-        {{ $i['name'] }}<br>
-    @endforeach
+    
+        {{ $single_quiz['country'] }}<br>
+
+        @foreach($single_quiz['capitals'] as $i)
+            {{ $i }}
+            <br>
+        @endforeach
+    
 </div>
 </body>
 @include('layout.footer')
