@@ -18,6 +18,13 @@ class QuizController extends Controller
         return view('index',compact('single_quiz'));
     }
 
+    public function postAnswer(Request $request){
+
+        Log::info(gettype($request));
+        Log::info($request->all());
+
+    }
+
     /**
      * Responsible to Pick a Question includes 3 
      */
@@ -75,6 +82,5 @@ class QuizController extends Controller
 
         return $raw_response;
     }
-
 
 }
