@@ -23,6 +23,17 @@ class QuizController extends Controller
         Log::info(gettype($request));
         Log::info($request->all());
 
+        if (!session()->has('current_capital')) {
+            return view('result', 'Session Expired');
+        }
+        
+        if (session('current_capital') === $request->all()['capital'])
+        {
+            return view('result', ['message'=>'correct']);
+        }
+        else{
+            return view('result', ['message'=>'not correct','correct_capital'=>session('current_capital')]);
+        }
     }
 
     /**
@@ -54,6 +65,9 @@ class QuizController extends Controller
         // Correct capital always on top // need to shuffle it
         // https://laravel.com/docs/11.x/helpers#method-array-shuffle
         shuffle($capital_obj_arr);
+
+        // Assuming Question check for all validity now put a correct capital in session for quick compare
+        session(['current_capital' => $random_q_obj['capital']]);
 
         return [
             'country'=> $random_country,
