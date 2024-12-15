@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\QuizController;
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/',[QuizController::class, 'newQuiz']);
+
+// Submit Quiz (Post)
+

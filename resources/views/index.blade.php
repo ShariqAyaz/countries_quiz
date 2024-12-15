@@ -1,5 +1,9 @@
 @include('layout.header')
 <body>
-    <h2>Body</h2>
+<div class="container">
+    @foreach($single_quiz as $i)
+        {{ $i['name'] }}<br>
+    @endforeach
+</div>
 </body>
 @include('layout.footer')
