@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Http;
 use Log;
+use Cache;
 
 class QuizController extends Controller
 {
@@ -26,13 +27,21 @@ class QuizController extends Controller
         return $raw_response;
     }
 
-    // I'll handle cache and download api response
+    // I'll handle cache and download api response //
     private function datasource(){
 
-        $raw_response = Http::get($this->url);
+        // Cache::flush();
+        // https://laravel.com/docs/11.x/cache#retrieve-store
+        $raw_response = Cache::remember('country_response', (60*60), function () {
+            $response = Http::get($this->url);
+            return $response;
+        });
+
+        Log::info('QuizController->datasource()');
+        Log::info($raw_response);
+        
 
         return $raw_response;
-
     }
 
 
