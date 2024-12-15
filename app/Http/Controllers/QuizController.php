@@ -77,7 +77,7 @@ class QuizController extends Controller
         ];
     }
 
-    // I'll handle cache and download api response //
+    // I'll handle cache and download the external api response //
     private function datasource(){
 
         // Cache::flush();
@@ -97,6 +97,24 @@ class QuizController extends Controller
         Log::info(gettype($raw_response)); // arry
 
         return $raw_response;
+    }
+
+
+    public function questionViaApi()
+    {
+        try {
+            $single_quiz = $this->pickNew();
+            return response()->json([
+                'success' => true,
+                'data' => $single_quiz
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching new quiz question: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to fetch quiz question at this time.'
+            ], 500);
+        }
     }
 
 }
