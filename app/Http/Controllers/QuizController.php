@@ -7,17 +7,34 @@ use Http;
 use Log;
 use Cache;
 use App\Http\Requests\AnswerValidationRequest;
+use App\Models\User;
 
 class QuizController extends Controller
 {
     protected $url = "https://countriesnow.space/api/v0.1/countries/capital";
 
-    public function newQuiz(){
+    // Web.php Call
 
+    public function newQuiz()
+    {
         $single_quiz = $this->pickNew();
 
-        return view('index',compact('single_quiz'));
+        $existingToken = request()->header('Authorization');
+
+        if ($existingToken) {
+            $existingToken = str_replace('Bearer ', '', $existingToken);
+            $isValid = auth()->checkTokenValidity($existingToken); 
+            if ($isValid) {
+                return view('welcome', compact('single_quiz', 'existingToken'));
+            }
+        }
+
+        $user = User::first(); 
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return view('welcome', compact('single_quiz', 'token'));
     }
+
 
     public function postAnswer(AnswerValidationRequest $request){
 
@@ -26,15 +43,29 @@ class QuizController extends Controller
 
  
         if (!session()->has('current_capital')) {
-            return view('result', 'Session Expired');
+            return response()->json(['message' => 'Session Expired'], 401);
         }
+
+        // if (!session()->has('current_capital')) {
+        //     return view('result', 'Session Expired');
+        // }
         
-        if (session('current_capital') === $request->all()['capital'])
-        {
-            return view('result', ['message'=>'correct']);
-        }
-        else{
-            return view('result', ['message'=>'not correct','correct_capital'=>session('current_capital')]);
+        // BLADE
+        // if (session('current_capital') === $request->all()['capital'])
+        // {
+        //     return view('result', ['message'=>'correct']);
+        // }
+        // else{
+        //     return view('result', ['message'=>'not correct','correct_capital'=>session('current_capital')]);
+        // }
+
+        if ($correctCapital === $submittedCapital) {
+            return response()->json(['message' => 'correct'], 200);
+        } else {
+            return response()->json([
+                'message' => 'not correct',
+                'correct_capital' => $correctCapital
+            ], 200);
         }
     }
 
@@ -71,6 +102,8 @@ class QuizController extends Controller
         // Assuming Question check for all validity now put a correct capital in session for quick compare
         session(['current_capital' => $random_q_obj['capital']]);
 
+        Log::info(session('current_capital'));
+
         return [
             'country'=> $random_country,
             'capitals'=> $capital_obj_arr
@@ -99,6 +132,7 @@ class QuizController extends Controller
         return $raw_response;
     }
 
+    // api.php Call (protected)
     public function questionViaApi()
     {
         try {

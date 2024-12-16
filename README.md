@@ -30,6 +30,10 @@
 #### Form Request Validation
 ```php artisan make:request AnswerValidationRequest```
 
+### Token need to test protected resourse
+php artisan app:obtain-token test@example.com
+
+
 ```
     public function rules(): array
     {

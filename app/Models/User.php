@@ -47,4 +47,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function checkTokenValidity($token)
+    {
+        return $this->tokens()->where('token', hash('sha256', $token))->exists();
+    }
 }
