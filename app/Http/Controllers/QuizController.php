@@ -36,29 +36,18 @@ class QuizController extends Controller
     }
 
 
-    public function postAnswer(AnswerValidationRequest $request){
-
+    public function postAnswer(AnswerValidationRequest $request)
+    {
         Log::info(gettype($request));
         Log::info($request->all());
-
- 
+    
         if (!session()->has('current_capital')) {
             return response()->json(['message' => 'Session Expired'], 401);
         }
-
-        // if (!session()->has('current_capital')) {
-        //     return view('result', 'Session Expired');
-        // }
-        
-        // BLADE
-        // if (session('current_capital') === $request->all()['capital'])
-        // {
-        //     return view('result', ['message'=>'correct']);
-        // }
-        // else{
-        //     return view('result', ['message'=>'not correct','correct_capital'=>session('current_capital')]);
-        // }
-
+    
+        $submittedCapital = $request->input('capital');
+        $correctCapital = session('current_capital');
+    
         if ($correctCapital === $submittedCapital) {
             return response()->json(['message' => 'correct'], 200);
         } else {
@@ -74,7 +63,17 @@ class QuizController extends Controller
      */
     private function pickNew(){
 
-        $raw_response = $this->datasource()['data'];
+        try {
+            $raw_response = $this->datasource()['data'];
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching country capitals:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return null;
+        }
+
+        
 
         return $this->findNewQuestion($raw_response);
     }
@@ -111,24 +110,42 @@ class QuizController extends Controller
     }
 
     // I'll handle cache and download the external api response //
-    private function datasource(){
-
-        // Cache::flush();
-        // https://laravel.com/docs/11.x/cache#retrieve-store 
-        $raw_response = Cache::remember('country_response', (60*60), function () {
-
-            $response = Http::timeout(10)->get($this->url);
-
-            if ($response->failed()) {
-                return null;
-            }
-
-            return $response->json();
-        });
-
+    private function datasource()
+    {
+        try {
+            // Cache::flush();
+            $raw_response = Cache::remember('country_response', 3600, function () {
+                try {
+                    $response = Http::timeout(10)->get($this->url);
+    
+                    if ($response->failed()) {
+                        Log::error('Failed to fetch country capitals.', [
+                            'status' => $response->status(),
+                            'body' => $response->body(),
+                        ]);
+                        return null; // Or return a default structure if preferred
+                    }
+    
+                    return $response->json();
+                } catch (\Exception $e) {
+                    Log::error('Exception while fetching country capitals:', [
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                    return null;
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception in datasource method:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            $raw_response = null;
+        }
+    
         Log::info('QuizController->datasource()');
-        Log::info(gettype($raw_response)); // arry
-
+        Log::info('Type of raw_response:', ['type' => gettype($raw_response)]);
+    
         return $raw_response;
     }
 

@@ -2,28 +2,13 @@
 import axios from 'axios';
 import initializeCsrf from './initializeCsrf';
 
-// Function to retrieve token dynamically
-const getToken = () => {
-    const token = localStorage.getItem('token');
-    if (token) return token;
-
-    const envToken = import.meta.env.VITE_SANCTUM_TOKEN;
-    if (envToken) {
-        localStorage.setItem('token', envToken);
-        return envToken;
-    }
-
-    console.warn('No token found in localStorage or environment variables.');
-    return null;
-};
-
 // Public client
 export const publicClient = axios.create({
     baseURL: '/api',
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
+    withCredentials: true, 
 });
 
 // Protected client
@@ -32,10 +17,10 @@ export const privateClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
+    withCredentials: true, // Enable sending cookies
 });
 
-
+// Interceptor & initialize CSRF before each request
 privateClient.interceptors.request.use(
     async (config) => {
         await initializeCsrf(); 
@@ -43,18 +28,6 @@ privateClient.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
-
-privateClient.interceptors.request.use(
-    (config) => {
-        const token = getToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
-
 
 // privateClient.interceptors.response.use(
 //     (response) => response,
