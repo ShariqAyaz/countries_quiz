@@ -20,7 +20,8 @@
 ### Frontend:
 -  Blade       √ (branch: main) (Approx. 4hrs)
 -  Livewire    Next Iteration (branch: livewire)
--  React       Next Iteration (branch: react)
+-  React       √ (branch: react-stateful) - Stateful
+-  React       Partially done (branch: react) - Stateless
 -  Vue         Next Iteration (branch: vuejs)
 
 ### Cache:
