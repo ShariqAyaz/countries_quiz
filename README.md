@@ -160,3 +160,12 @@ resources/views
 }
 
 ```
+
+### Note for Production
+- Following file should be moved in production upon command `npm run build`
+```
+    "scripts": {
+        "build": "vite build && mv public/build/.vite/manifest.json public/build/manifest.json",
+        "dev": "vite"
+    },
+```
