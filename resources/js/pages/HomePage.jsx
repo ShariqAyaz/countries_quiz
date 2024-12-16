@@ -11,14 +11,14 @@ const HomePage = () => {
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
-    // A function to initialize and fetch a new question
+    // reset new
     const fetchNewQuestion = async () => {
         try {
             setLoading(true);
             setError(null);
             setFeedback(null);
 
-            // Re-initialize CSRF and auto-login to ensure session
+            // Auto login
             await initializeCsrf();
             await publicClient.get('/auto-login');
 
@@ -34,7 +34,7 @@ const HomePage = () => {
     };
 
     useEffect(() => {
-        // Initial setup on component mount
+        // initial mound
         (async () => {
             await fetchNewQuestion();
         })();
@@ -84,7 +84,7 @@ const HomePage = () => {
             {error && <div className="alert alert-danger">{error}</div>}
             {feedback && <div className="alert alert-info">{feedback}</div>}
 
-            {/* When feedback is present, show a "New Question" button */}
+            
             {feedback && (
                 <div className="mt-3">
                     <button

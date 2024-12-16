@@ -20,9 +20,14 @@
 ### Frontend:
 -  Blade       √ (branch: main) (Approx. 4hrs)
 -  Livewire    Next Iteration (branch: livewire)
--  React       √ Next Iteration (branch: react-stateful)
+-  React       √ (branch: react-stateful) - Stateful
+-  React       Partially done (branch: react) - Stateless
 -  Vue         Next Iteration (branch: vuejs)
 
+```
+# that key need to add on stateless until login system is not align
+VITE_SANCTUM_TOKEN=
+```
 ### Cache:
 - CACHE_STORE=database
 - CACHE_PREFIX=quiz_
